@@ -13,6 +13,7 @@ import {
 import { IMAGES } from '../data/images';
 import { makeRoundedMaterial, CORNER_RADIUS } from '../lib/roundedMaterial';
 import { shortName, timestampFor } from '../lib/cardLabels';
+import { useTheme, colors } from '../lib/theme';
 
 const REGIONS = {
   baseball:     { cy:  5.0, label: 'BASEBALL' },
@@ -100,6 +101,8 @@ function NodeCard({ image, position, label, timestamp, onClick }) {
   const imgRef = useRef();
   const [hovered, setHovered] = useState(false);
   const [texture, setTexture] = useState(null);
+  const theme = useTheme();
+  const c = colors(theme);
 
   const material = useMemo(
     () =>
@@ -202,7 +205,7 @@ function NodeCard({ image, position, label, timestamp, onClick }) {
         <Text
           position={[0, -CARD_H / 2 - 0.07, 0.03]}
           fontSize={0.085}
-          color="#0a0a0a"
+          color={c.fg}
           anchorX="center"
           anchorY="top"
           renderOrder={3}
@@ -212,7 +215,7 @@ function NodeCard({ image, position, label, timestamp, onClick }) {
         <Text
           position={[0, -CARD_H / 2 - 0.19, 0.03]}
           fontSize={0.06}
-          color="#888888"
+          color={c.dim}
           anchorX="center"
           anchorY="top"
           renderOrder={3}
@@ -226,6 +229,8 @@ function NodeCard({ image, position, label, timestamp, onClick }) {
 
 export function NodeScene({ onCardClick }) {
   const { camera } = useThree();
+  const theme = useTheme();
+  const c = colors(theme);
 
   useEffect(() => {
     camera.position.set(0, 0, 16);
@@ -301,7 +306,7 @@ export function NodeScene({ onCardClick }) {
         <Line
           points={lineSegments}
           segments
-          color="#0a0a0a"
+          color={c.line}
           lineWidth={1}
           transparent
           opacity={0.1}
@@ -320,7 +325,7 @@ export function NodeScene({ onCardClick }) {
               0,
             ]}
             fontSize={0.22}
-            color="#0a0a0a"
+            color={c.fg}
             anchorX="right"
             anchorY="middle"
             letterSpacing={0.05}

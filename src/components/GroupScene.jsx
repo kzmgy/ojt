@@ -10,6 +10,7 @@ import {
 } from 'three';
 import { IMAGES } from '../data/images';
 import { makeRoundedMaterial, CORNER_RADIUS } from '../lib/roundedMaterial';
+import { useTheme, colors } from '../lib/theme';
 
 // All three hemispheres are the same size now (between the previous
 // interstellar and baseball sizes). Card sizes also unified.
@@ -134,6 +135,8 @@ function HemiCard({ image, position, width, height, onClick }) {
 
 function Hemisphere({ hem, slot, isSelected, onSelect, onCardClick }) {
   const groupRef = useRef();
+  const theme = useTheme();
+  const c = colors(theme);
   const cards = useMemo(
     () => IMAGES.filter((img) => img.subgroup === hem.key),
     [hem.key]
@@ -216,7 +219,7 @@ function Hemisphere({ hem, slot, isSelected, onSelect, onCardClick }) {
       <Text
         position={[0, HEMI_RADIUS + 0.4, 0]}
         fontSize={0.28}
-        color="#0a0a0a"
+        color={c.fg}
         anchorX="center"
         anchorY="bottom"
         letterSpacing={0.06}

@@ -11,6 +11,7 @@ import {
   Color,
 } from 'three';
 import { makeRoundedMaterial, CORNER_RADIUS } from '../lib/roundedMaterial';
+import { useTheme, colors } from '../lib/theme';
 
 const CARD_W = 0.7;
 const CARD_H = 0.7 * 9 / 16;
@@ -259,34 +260,40 @@ export function Card({
       </mesh>
       {/* Title + timestamp under the card — only shown in cloud (sphere)
           mode. Same font sizes as the Node view. */}
-      {inCloud && label && (
-        <Suspense fallback={null}>
-          <Text
-            ref={labelRef}
-            position={[0, -CARD_H / 2 - 0.07, 0.001]}
-            fontSize={0.085}
-            color="#0a0a0a"
-            anchorX="center"
-            anchorY="top"
-          >
-            {label}
-          </Text>
-          {timestamp && (
-            <Text
-              ref={timeRef}
-              position={[0, -CARD_H / 2 - 0.19, 0.001]}
-              fontSize={0.06}
-              color="#888888"
-              anchorX="center"
-              anchorY="top"
-            >
-              {timestamp}
-            </Text>
-          )}
-        </Suspense>
-      )}
+      {inCloud && label && <CardLabels labelRef={labelRef} timeRef={timeRef} label={label} timestamp={timestamp} />}
     </group>
   );
 }
 
 export const CARD_SIZE = { w: CARD_W, h: CARD_H };
+
+function CardLabels({ labelRef, timeRef, label, timestamp }) {
+  const theme = useTheme();
+  const c = colors(theme);
+  return (
+    <Suspense fallback={null}>
+      <Text
+        ref={labelRef}
+        position={[0, -CARD_H / 2 - 0.07, 0.001]}
+        fontSize={0.085}
+        color={c.fg}
+        anchorX="center"
+        anchorY="top"
+      >
+        {label}
+      </Text>
+      {timestamp && (
+        <Text
+          ref={timeRef}
+          position={[0, -CARD_H / 2 - 0.19, 0.001]}
+          fontSize={0.06}
+          color={c.dim}
+          anchorX="center"
+          anchorY="top"
+        >
+          {timestamp}
+        </Text>
+      )}
+    </Suspense>
+  );
+}

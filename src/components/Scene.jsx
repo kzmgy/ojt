@@ -5,6 +5,7 @@ import { FrontSide } from 'three';
 import { Card, CARD_SIZE } from './Card';
 import { IMAGES, SPHERE_RADIUS as SPHERE_R } from '../data/images';
 import { shortName, timestampFor } from '../lib/cardLabels';
+import { useTheme, colors } from '../lib/theme';
 
 const DRAG_THRESHOLD = 4;
 
@@ -119,6 +120,8 @@ const SPHERE_LINE_PAIRS = (() => {
 export function Scene({ gridState, setGridState }) {
   const groupRef = useRef();
   const { gl, camera, size } = useThree();
+  const theme = useTheme();
+  const c = colors(theme);
   const aspect = size.width / Math.max(1, size.height);
   const isCompact = size.width < 700 || aspect < 1.3;
   const inGrid = !!gridState;
@@ -462,7 +465,7 @@ export function Scene({ gridState, setGridState }) {
       <Text
         position={LABEL_POS}
         fontSize={0.096}
-        color="#0a0a0a"
+        color={c.fg}
         anchorX="center"
         anchorY="middle"
         letterSpacing={0.08}
@@ -484,7 +487,7 @@ export function Scene({ gridState, setGridState }) {
             lineRefs.current[i] = el;
           }}
           points={pair.points}
-          color="#0a0a0a"
+          color={c.line}
           lineWidth={1}
           transparent
           opacity={0}

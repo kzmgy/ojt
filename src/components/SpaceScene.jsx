@@ -17,6 +17,7 @@ import {
 import { IMAGES } from '../data/images';
 import { makeRoundedMaterial, CORNER_RADIUS } from '../lib/roundedMaterial';
 import { shortName, timestampFor } from '../lib/cardLabels';
+import { useTheme, colors } from '../lib/theme';
 
 // Cards from data/images.js sit on a sphere of radius 5. Multiply by
 // SPACE_SCALE so the user (camera at origin) is INSIDE a much larger
@@ -144,6 +145,8 @@ function SpaceCard({ image, position, label, timestamp, onClick }) {
   const groupRef = useRef();
   const [hovered, setHovered] = useState(false);
   const [texture, setTexture] = useState(null);
+  const theme = useTheme();
+  const c = colors(theme);
 
   const material = useMemo(
     () =>
@@ -238,7 +241,7 @@ function SpaceCard({ image, position, label, timestamp, onClick }) {
         <Text
           position={[0, -CARD_H / 2 - 0.10, 0.001]}
           fontSize={0.12}
-          color="#0a0a0a"
+          color={c.fg}
           anchorX="center"
           anchorY="top"
         >
@@ -247,7 +250,7 @@ function SpaceCard({ image, position, label, timestamp, onClick }) {
         <Text
           position={[0, -CARD_H / 2 - 0.27, 0.001]}
           fontSize={0.085}
-          color="#888888"
+          color={c.dim}
           anchorX="center"
           anchorY="top"
         >
@@ -260,6 +263,8 @@ function SpaceCard({ image, position, label, timestamp, onClick }) {
 
 export function SpaceScene({ onCardClick }) {
   const { camera, gl } = useThree();
+  const theme = useTheme();
+  const c = colors(theme);
 
   const drag = useRef({ active: false, lastX: 0, lastY: 0, moved: 0 });
   const lookState = useRef({ yaw: 0, pitch: 0, vx: 0, vy: 0 });
@@ -338,12 +343,15 @@ export function SpaceScene({ onCardClick }) {
   useFrame((_, delta) => {
     const lerp = 1 - Math.exp(-7 * delta);
 
-    // Inertial decay when not actively dragging
+    // Inertial decay + gentle auto-rotation (like a planetarium drift)
+    // when the user isn't actively dragging.
     if (!drag.current.active) {
       lookState.current.yaw += lookState.current.vx;
       lookState.current.pitch += lookState.current.vy;
       lookState.current.vx *= 0.92;
       lookState.current.vy *= 0.92;
+      // Slow yaw drift — same feel as Sphere's auto-rotate.
+      lookState.current.yaw += 0.0012;
       const HALF_PI = Math.PI / 2 - 0.05;
       lookState.current.pitch = Math.max(
         -HALF_PI,
@@ -381,7 +389,7 @@ export function SpaceScene({ onCardClick }) {
             lineRefs.current[i] = el;
           }}
           points={pair.points}
-          color="#0a0a0a"
+          color={c.line}
           lineWidth={1}
           transparent
           opacity={0}
