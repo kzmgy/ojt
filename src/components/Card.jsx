@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import {
   TextureLoader,
+  VideoTexture,
   SRGBColorSpace,
   LinearFilter,
   Vector3,
@@ -11,6 +12,7 @@ import {
   Color,
 } from 'three';
 import { makeRoundedMaterial, CORNER_RADIUS } from '../lib/roundedMaterial';
+import { KOREAN_FONT } from '../lib/cardLabels';
 import { useTheme, colors } from '../lib/theme';
 
 const CARD_W = 0.7;
@@ -46,7 +48,11 @@ export function Card({
   const timeRef = useRef();
   const [hovered, setHovered] = useState(false);
   const [texture, setTexture] = useState(null);
+  const [videoTexture, setVideoTexture] = useState(null);
   const transRef = useRef(inCloud ? 0 : 1);
+
+  // Video plays only while the card is part of the carousel row AND has a clip.
+  const isInRowWithVideo = !inCloud && rowIdx >= 0 && !!image.videoSrc;
 
   // No border for any photo card (all 3 groups are real photos now).
   const hasBorder = false;
@@ -119,13 +125,78 @@ export function Card({
     };
   }, [image.src]);
 
+  // Mount/unmount the video element when the card enters/leaves the row.
   useEffect(() => {
-    if (texture) {
-      imageMat.map = texture;
+    if (!isInRowWithVideo) {
+      setVideoTexture((prev) => {
+        if (prev) {
+          const v = prev.image;
+          if (v && typeof v.pause === 'function') v.pause();
+          prev.dispose();
+        }
+        return null;
+      });
+      return;
+    }
+
+    const video = document.createElement('video');
+    video.src = image.videoSrc;
+    video.crossOrigin = 'anonymous';
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.autoplay = true;
+    video.preload = 'auto';
+    // Prevent the element from being added to the DOM tree but keep it
+    // alive so the browser keeps decoding.
+    video.style.display = 'none';
+
+    const vt = new VideoTexture(video);
+    vt.colorSpace = SRGBColorSpace;
+    vt.minFilter = LinearFilter;
+    vt.generateMipmaps = false;
+
+    // cover-fit (same logic as still images) once metadata is ready.
+    const applyCover = () => {
+      const w = video.videoWidth;
+      const h = video.videoHeight;
+      if (!w || !h) return;
+      const aspect = w / h;
+      if (aspect > CARD_ASPECT) {
+        vt.repeat.x = CARD_ASPECT / aspect;
+        vt.repeat.y = 1;
+        vt.offset.x = (1 - vt.repeat.x) / 2;
+        vt.offset.y = 0;
+      } else {
+        vt.repeat.x = 1;
+        vt.repeat.y = aspect / CARD_ASPECT;
+        vt.offset.x = 0;
+        vt.offset.y = (1 - vt.repeat.y) / 2;
+      }
+      vt.needsUpdate = true;
+    };
+    video.addEventListener('loadedmetadata', applyCover);
+
+    video.play().catch(() => {});
+    setVideoTexture(vt);
+
+    return () => {
+      video.removeEventListener('loadedmetadata', applyCover);
+      video.pause();
+      video.src = '';
+      video.load();
+      vt.dispose();
+    };
+  }, [isInRowWithVideo, image.videoSrc]);
+
+  useEffect(() => {
+    const active = videoTexture || texture;
+    if (active) {
+      imageMat.map = active;
       imageMat.color = new Color(0xffffff);
       imageMat.needsUpdate = true;
     }
-  }, [texture, imageMat]);
+  }, [texture, videoTexture, imageMat]);
 
   useFrame((state, delta) => {
     const obj = animRef.current;
@@ -274,6 +345,7 @@ function CardLabels({ labelRef, timeRef, label, timestamp }) {
     <Suspense fallback={null}>
       <Text
         ref={labelRef}
+        font={KOREAN_FONT}
         position={[0, -CARD_H / 2 - 0.07, 0.001]}
         fontSize={0.085}
         color={c.fg}
@@ -285,6 +357,7 @@ function CardLabels({ labelRef, timeRef, label, timestamp }) {
       {timestamp && (
         <Text
           ref={timeRef}
+          font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.19, 0.001]}
           fontSize={0.06}
           color={c.dim}

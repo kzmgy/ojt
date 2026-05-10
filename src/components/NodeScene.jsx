@@ -12,18 +12,18 @@ import {
 } from 'three';
 import { IMAGES } from '../data/images';
 import { makeRoundedMaterial, CORNER_RADIUS } from '../lib/roundedMaterial';
-import { shortName, timestampFor } from '../lib/cardLabels';
+import { shortName, timestampFor, KOREAN_FONT } from '../lib/cardLabels';
 import { useTheme, colors } from '../lib/theme';
 
 const REGIONS = {
-  baseball:     { cy:  5.0, label: 'BASEBALL' },
-  interstellar: { cy:  0.0, label: 'INTERSTELLAR' },
-  hongkong:     { cy: -5.0, label: 'HONGKONG' },
+  interstellar: { cy:  6.0, label: '인터스텔라' },
+  baseball:     { cy: -6.0, label: '야구' },
 };
 
-// Variable card counts per column — gives a tree-ish, non-grid layout.
-// Sum must equal CARDS_PER_GROUP.
-const COLUMN_COUNTS = [4, 2, 5, 3, 4, 3]; // sum = 21
+// Variable card counts per column — tree-ish, non-grid layout. Sum =
+// CARDS_PER_GROUP. With 100 cards per group across 10 columns, max
+// column height stays around 13 so the OrbitControls pan handles the rest.
+const COLUMN_COUNTS = [8, 11, 13, 9, 10, 11, 13, 10, 8, 7]; // sum = 100
 const CARDS_PER_GROUP = COLUMN_COUNTS.reduce((a, b) => a + b, 0);
 const NUM_COLS = COLUMN_COUNTS.length;
 
@@ -58,7 +58,7 @@ function cubBez(p0, p1, p2, p3, t) {
 // Build the layout. Columns share X across all groups (vertical alignment),
 // but each column in each group has its own Y offset (rows aren't aligned).
 function nodeLayout() {
-  const grouped = { baseball: [], interstellar: [], hongkong: [] };
+  const grouped = { interstellar: [], baseball: [] };
   for (const img of IMAGES) {
     if (!grouped[img.subgroup]) continue;
     if (grouped[img.subgroup].length >= CARDS_PER_GROUP) continue;
@@ -203,6 +203,7 @@ function NodeCard({ image, position, label, timestamp, onClick }) {
       </group>
       <Suspense fallback={null}>
         <Text
+          font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.07, 0.03]}
           fontSize={0.085}
           color={c.fg}
@@ -213,6 +214,7 @@ function NodeCard({ image, position, label, timestamp, onClick }) {
           {label}
         </Text>
         <Text
+          font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.19, 0.03]}
           fontSize={0.06}
           color={c.dim}
@@ -319,6 +321,7 @@ export function NodeScene({ onCardClick }) {
         {Object.entries(REGIONS).map(([key, region]) => (
           <Text
             key={key}
+            font={KOREAN_FONT}
             position={[
               -((NUM_COLS - 1) / 2) * COL_SPACING - 1.4,
               region.cy,

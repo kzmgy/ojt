@@ -6,7 +6,6 @@ import { GroupScene } from './components/GroupScene';
 import { NodeScene } from './components/NodeScene';
 import { SpaceScene } from './components/SpaceScene';
 import { CursorOrb } from './components/CursorOrb';
-import { IMAGES } from './data/images';
 import { ThemeContext, colors } from './lib/theme';
 
 function buildGridState(card) {
@@ -40,10 +39,6 @@ export default function App() {
       localStorage.setItem('theme', theme);
     } catch (e) {}
   }, [theme]);
-
-  const focused = gridState
-    ? IMAGES.find((i) => i.id === gridState.focusedId)
-    : null;
 
   const switchView = (mode) => {
     if (mode === viewMode) return;
@@ -92,24 +87,8 @@ export default function App() {
               className="back-btn"
               onClick={closeGrid}
             >
-              ← Back
+              ← 뒤로
             </motion.button>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence mode="wait">
-          {viewMode === 'sphere' && focused && (
-            <motion.div
-              key={`info-${focused.id}`}
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 24 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="info-card"
-            >
-              <div className="info-cat">{focused.category}</div>
-              <div className="info-title">{focused.title}</div>
-            </motion.div>
           )}
         </AnimatePresence>
 

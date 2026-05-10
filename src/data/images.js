@@ -1,35 +1,19 @@
-// Globe view: 21 INTERSTELLAR + N BASEBALL (upper hemisphere) + M HONGKONG
-// (lower hemisphere). N + M is determined by the number of fibonacci slots
-// remaining after picking 21 for the cluster. Image variants cycle in
-// azimuth order so duplicates land far apart on the globe.
+// Two categories — Interstellar (front cluster) + Baseball (rest of sphere).
+// Both are sourced from a single MP4 each via scripts/convert-videos.mjs:
+//   • thumbnail JPG (used by Sphere/Group/Node/Space views)
+//   • 12 s clip MP4 (used by the carousel detail view)
+
+import VIDEO_MANIFEST from './videoManifest.json';
+import FILE_LIST from './fileList.json';
 
 const SPHERE_R = 5;
 const RADIUS_JITTER = 0.45;
-const TOTAL_SLOTS = 200;
 
-const INT_FILES = [
-  '01.jpeg', '02.jpg', '03.jpg', '04.jpg', '05.jpg',
-  '06.jpeg', '07.jpg', '08.jpg', '09.jpg', '10.jpg',
-  '11.jpg', '12.jpeg', '13.jpg', '14.jpg', '15.jpg',
-  '16.jpg', '17.jpeg', '18.jpg', '19.jpg', '20.jpg',
-  '21.jpg',
-];
+const INT_FILES = FILE_LIST.int;
+const BASEBALL_FILES = FILE_LIST.baseball;
 
-const BASEBALL_FILES = [
-  '01.jpg', '02.jpg', '03.jpg', '04.jpg', '05.jpeg',
-  '06.jpg', '07.jpg', '08.jpg', '09.jpg', '10.jpg',
-  '11.jpg', '12.jpeg', '13.jpg', '14.png', '15.jpg',
-  '16.jpg', '17.jpg', '18.jpeg', '19.jpg', '20.jpg',
-  '21.jpg', '22.jpeg', '23.jpg',
-];
-
-const HONGKONG_FILES = [
-  '01.jpeg', '02.jpg', '03.jpg', '04.jpeg', '05.jpeg',
-  '06.jpeg', '07.jpg', '08.jpeg', '09.jpg', '10.jpeg',
-  '11.jpeg', '12.jpg', '13.jpeg', '14.jpg', '15.jpeg',
-  '16.jpeg', '17.jpg', '18.jpg', '19.jpg', '20.jpeg',
-  '21.jpeg',
-];
+// Total slots = sum of the two category counts (1:1 ratio, no duplicates).
+const TOTAL_SLOTS = INT_FILES.length + BASEBALL_FILES.length;
 
 function srand(seed) {
   let s = (seed | 0) || 1;
@@ -62,7 +46,7 @@ function fibSphere(N, R) {
 
 const FIB = fibSphere(TOTAL_SLOTS, SPHERE_R);
 
-// 1) Interstellar slots: 21 closest to (0, 0, R), with mild equatorial bias
+// 1) Interstellar = the slots closest to (0, 0, R) — front cluster.
 const _interstellarSlots = (() => {
   const sorted = FIB.map((p, idx) => {
     const dx = p[0];
@@ -74,24 +58,20 @@ const _interstellarSlots = (() => {
 })();
 const _interstellarSlotSet = new Set(_interstellarSlots);
 
-// 2) Hemisphere split for the rest. Sort by azimuth so a round-robin
-//    image-cycle lands duplicates far apart in azimuth.
-const _upperSlots = [];
-const _lowerSlots = [];
+// 2) Baseball = everything else, sorted by azimuth so file cycle keeps
+//    duplicates far apart (in this 1:1 build there are no duplicates,
+//    but keeping the azimuth order makes neighbours land naturally).
+const _baseballSlots = [];
 FIB.forEach((p, idx) => {
   if (_interstellarSlotSet.has(idx)) return;
-  if (p[1] >= 0) _upperSlots.push(idx);
-  else _lowerSlots.push(idx);
+  _baseballSlots.push(idx);
 });
 function az(p) { return Math.atan2(p[0], p[2]); }
-_upperSlots.sort((a, b) => az(FIB[a]) - az(FIB[b]));
-_lowerSlots.sort((a, b) => az(FIB[a]) - az(FIB[b]));
+_baseballSlots.sort((a, b) => az(FIB[a]) - az(FIB[b]));
 
-// 3) Build IMAGES — each card knows its sphere position & subgroup.
 const RAW = [];
 let nextId = 1;
 
-// Interstellar — one per file, in cluster slots
 INT_FILES.forEach((file, i) => {
   const slotIdx = _interstellarSlots[i];
   RAW.push({
@@ -104,9 +84,9 @@ INT_FILES.forEach((file, i) => {
   });
 });
 
-// Baseball — upper hemisphere, files cycle in azimuth order
-_upperSlots.forEach((slotIdx, i) => {
-  const file = BASEBALL_FILES[i % BASEBALL_FILES.length];
+BASEBALL_FILES.forEach((file, i) => {
+  const slotIdx = _baseballSlots[i];
+  if (slotIdx == null) return; // safety — shouldn't happen with 1:1
   RAW.push({
     id: nextId++,
     title: `BASEBALL · ${String(i + 1).padStart(3, '0')}`,
@@ -117,21 +97,13 @@ _upperSlots.forEach((slotIdx, i) => {
   });
 });
 
-// Hongkong — lower hemisphere, files cycle in azimuth order
-_lowerSlots.forEach((slotIdx, i) => {
-  const file = HONGKONG_FILES[i % HONGKONG_FILES.length];
-  RAW.push({
-    id: nextId++,
-    title: `HONGKONG · ${String(i + 1).padStart(3, '0')}`,
-    category: 'hongkong',
-    subgroup: 'hongkong',
-    src: `/hongkong/${file}`,
-    position: FIB[slotIdx],
-  });
-});
+// Attach video clip when one was generated for the same path.
+for (const img of RAW) {
+  const v = VIDEO_MANIFEST[img.src];
+  if (v) img.videoSrc = v;
+}
 
-// 4) relatedIds: 5 same-subgroup cards with DIFFERENT src (no duplicate
-//    images in the carousel row).
+// relatedIds: 5 same-subgroup peers with different src (no carousel duplicates).
 for (const img of RAW) {
   const pool = RAW.filter(
     (o) => o.subgroup === img.subgroup && o.id !== img.id && o.src !== img.src

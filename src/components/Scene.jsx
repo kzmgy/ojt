@@ -4,7 +4,7 @@ import { Text, Line } from '@react-three/drei';
 import { FrontSide } from 'three';
 import { Card, CARD_SIZE } from './Card';
 import { IMAGES, SPHERE_RADIUS as SPHERE_R } from '../data/images';
-import { shortName, timestampFor } from '../lib/cardLabels';
+import { shortName, timestampFor, KOREAN_FONT } from '../lib/cardLabels';
 import { useTheme, colors } from '../lib/theme';
 
 const DRAG_THRESHOLD = 4;
@@ -463,6 +463,7 @@ export function Scene({ gridState, setGridState }) {
     <group ref={groupRef}>
       {/* Group label for the Interstellar cluster — rotates with the globe */}
       <Text
+        font={KOREAN_FONT}
         position={LABEL_POS}
         fontSize={0.096}
         color={c.fg}
@@ -473,7 +474,7 @@ export function Scene({ gridState, setGridState }) {
         material-toneMapped={false}
         visible={!inGrid}
       >
-        INTERSTELLAR
+        인터스텔라
       </Text>
 
       {/* Same-subgroup connection lines, one <Line> per pair so each

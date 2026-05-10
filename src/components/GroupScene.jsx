@@ -10,24 +10,23 @@ import {
 } from 'three';
 import { IMAGES } from '../data/images';
 import { makeRoundedMaterial, CORNER_RADIUS } from '../lib/roundedMaterial';
+import { KOREAN_FONT } from '../lib/cardLabels';
 import { useTheme, colors } from '../lib/theme';
 
-// All three hemispheres are the same size now (between the previous
-// interstellar and baseball sizes). Card sizes also unified.
+// Two hemispheres (Interstellar + Baseball) at the original size.
 const HEMI_RADIUS = 3.05;
 const HEMI_CARD_SIZE = 0.48;
 
 const HEMISPHERES = [
-  { key: 'interstellar', color: '#7a8cc8', label: 'INTERSTELLAR' },
-  { key: 'baseball',     color: '#8fbb8c', label: 'BASEBALL' },
-  { key: 'hongkong',     color: '#d68bb0', label: 'HONGKONG' },
+  { key: 'interstellar', color: '#7a8cc8', label: '인터스텔라' },
+  { key: 'baseball',     color: '#8fbb8c', label: '야구' },
 ];
 
-// Carousel slot positions: [front-center, back-right, back-left]
+// Carousel slot positions: [front-center, back-side]. Same coordinates
+// as the original layout's first two slots.
 const SLOTS = [
   { pos: [0, -0.5,  1.5], scale: 1.0 },
   { pos: [5.5, -0.8, -3], scale: 0.55 },
-  { pos: [-5.5, -0.8, -3], scale: 0.55 },
 ];
 
 // Distribute N points on the *top* hemisphere of radius R using a
@@ -217,6 +216,7 @@ function Hemisphere({ hem, slot, isSelected, onSelect, onCardClick }) {
 
       {/* Group label above hemisphere */}
       <Text
+        font={KOREAN_FONT}
         position={[0, HEMI_RADIUS + 0.4, 0]}
         fontSize={0.28}
         color={c.fg}

@@ -16,7 +16,7 @@ import {
 } from 'three';
 import { IMAGES } from '../data/images';
 import { makeRoundedMaterial, CORNER_RADIUS } from '../lib/roundedMaterial';
-import { shortName, timestampFor } from '../lib/cardLabels';
+import { shortName, timestampFor, KOREAN_FONT } from '../lib/cardLabels';
 import { useTheme, colors } from '../lib/theme';
 
 // Cards from data/images.js sit on a sphere of radius 5. Multiply by
@@ -239,6 +239,7 @@ function SpaceCard({ image, position, label, timestamp, onClick }) {
       </mesh>
       <Suspense fallback={null}>
         <Text
+          font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.10, 0.001]}
           fontSize={0.12}
           color={c.fg}
@@ -248,6 +249,7 @@ function SpaceCard({ image, position, label, timestamp, onClick }) {
           {label}
         </Text>
         <Text
+          font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.27, 0.001]}
           fontSize={0.085}
           color={c.dim}
