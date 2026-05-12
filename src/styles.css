@@ -10,6 +10,14 @@
   src: url('/fonts/Pretendard-Regular.otf') format('opentype');
 }
 
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Pretendard-Bold.otf') format('opentype');
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -23,7 +31,7 @@ body,
   height: 100%;
   overflow: hidden;
   background: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, 'Pretendard',
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont,
     'Apple SD Gothic Neo', 'Helvetica Neue', sans-serif;
   color: #0a0a0a;
   -webkit-font-smoothing: antialiased;

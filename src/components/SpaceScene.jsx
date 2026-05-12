@@ -242,9 +242,12 @@ function SpaceCard({ image, position, label, timestamp, onClick }) {
           font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.10, 0.001]}
           fontSize={0.12}
-          color={c.fg}
+          color={0xffffff}
+          letterSpacing={-0.032}
           anchorX="center"
           anchorY="top"
+          material-transparent
+          material-opacity={0.7}
         >
           {label}
         </Text>
@@ -252,9 +255,12 @@ function SpaceCard({ image, position, label, timestamp, onClick }) {
           font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.27, 0.001]}
           fontSize={0.085}
-          color={c.dim}
+          color={0xffffff}
+          letterSpacing={-0.02}
           anchorX="center"
           anchorY="top"
+          material-transparent
+          material-opacity={0.5}
         >
           {timestamp}
         </Text>

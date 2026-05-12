@@ -61,6 +61,9 @@ export function timestampFor(img) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-// Path to a Korean-aware OTF served from /public/fonts. drei's <Text>
-// component accepts a font URL and renders it via troika-three-text.
-export const KOREAN_FONT = '/fonts/Pretendard-Regular.otf';
+// Korean-aware OTFs served from /public/fonts. drei's <Text> component
+// accepts a font URL and renders it via troika-three-text. We default to
+// Bold across the entire site since the design now uses semi-transparent
+// white labels that need extra weight to stay legible.
+export const KOREAN_FONT = '/fonts/Pretendard-Bold.otf';
+export const KOREAN_FONT_BOLD = '/fonts/Pretendard-Bold.otf';

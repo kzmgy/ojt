@@ -206,10 +206,13 @@ function NodeCard({ image, position, label, timestamp, onClick }) {
           font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.07, 0.03]}
           fontSize={0.085}
-          color={c.fg}
+          color={0xffffff}
+          letterSpacing={-0.032}
           anchorX="center"
           anchorY="top"
           renderOrder={3}
+          material-transparent
+          material-opacity={0.7}
         >
           {label}
         </Text>
@@ -217,10 +220,13 @@ function NodeCard({ image, position, label, timestamp, onClick }) {
           font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.19, 0.03]}
           fontSize={0.06}
-          color={c.dim}
+          color={0xffffff}
+          letterSpacing={-0.02}
           anchorX="center"
           anchorY="top"
           renderOrder={3}
+          material-transparent
+          material-opacity={0.5}
         >
           {timestamp}
         </Text>

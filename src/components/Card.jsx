@@ -279,9 +279,9 @@ export function Card({
     _worldQuat.setFromEuler(_euler);
     obj.quaternion.copy(_parentQuat).invert().multiply(_worldQuat);
 
-    // Text label opacity by facing direction. Cards on the FRONT of the
-    // sphere (normal points toward camera) → opacity 1. Cards on the
-    // BACK (normal points away) → opacity 0.2. Smooth in between.
+    // Text label opacity by facing direction. Front-facing reaches the
+    // design maxima (label 70 %, timestamp 50 %); back drops to ~10 % of
+    // those, so the labels fade smoothly with the sphere rotation.
     if (inCloud && (labelRef.current || timeRef.current)) {
       const dx = state.camera.position.x - _worldPos.x;
       const dz = state.camera.position.z - _worldPos.z;
@@ -289,14 +289,14 @@ export function Card({
       const cos =
         (Math.sin(worldYaw) * dx + Math.cos(worldYaw) * dz) / len;
       const facing = Math.max(0, cos);
-      const op = 0.1 + 0.9 * facing;
+      const base = 0.1 + 0.9 * facing; // 0.1 (back) → 1.0 (front)
       if (labelRef.current && labelRef.current.material) {
         labelRef.current.material.transparent = true;
-        labelRef.current.material.opacity = op;
+        labelRef.current.material.opacity = base * 0.7;
       }
       if (timeRef.current && timeRef.current.material) {
         timeRef.current.material.transparent = true;
-        timeRef.current.material.opacity = op;
+        timeRef.current.material.opacity = base * 0.5;
       }
     }
   });
@@ -348,9 +348,12 @@ function CardLabels({ labelRef, timeRef, label, timestamp }) {
         font={KOREAN_FONT}
         position={[0, -CARD_H / 2 - 0.07, 0.001]}
         fontSize={0.085}
-        color={c.fg}
+        color={0xffffff}
+        letterSpacing={-0.032}
         anchorX="center"
         anchorY="top"
+        material-transparent
+        material-opacity={0.7}
       >
         {label}
       </Text>
@@ -360,9 +363,12 @@ function CardLabels({ labelRef, timeRef, label, timestamp }) {
           font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.19, 0.001]}
           fontSize={0.06}
-          color={c.dim}
+          color={0xffffff}
+          letterSpacing={-0.02}
           anchorX="center"
           anchorY="top"
+          material-transparent
+          material-opacity={0.5}
         >
           {timestamp}
         </Text>
