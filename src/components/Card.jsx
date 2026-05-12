@@ -347,8 +347,8 @@ function CardLabels({ labelRef, timeRef, label, timestamp }) {
         ref={labelRef}
         font={KOREAN_FONT}
         position={[0, -CARD_H / 2 - 0.07, 0.001]}
-        fontSize={0.085}
-        color={0xffffff}
+        fontSize={0.068}
+        color={c.fg}
         letterSpacing={-0.032}
         anchorX="center"
         anchorY="top"
@@ -362,8 +362,8 @@ function CardLabels({ labelRef, timeRef, label, timestamp }) {
           ref={timeRef}
           font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.19, 0.001]}
-          fontSize={0.06}
-          color={0xffffff}
+          fontSize={0.048}
+          color={c.fg}
           letterSpacing={-0.02}
           anchorX="center"
           anchorY="top"

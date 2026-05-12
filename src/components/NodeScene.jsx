@@ -205,8 +205,8 @@ function NodeCard({ image, position, label, timestamp, onClick }) {
         <Text
           font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.07, 0.03]}
-          fontSize={0.085}
-          color={0xffffff}
+          fontSize={0.068}
+          color={c.fg}
           letterSpacing={-0.032}
           anchorX="center"
           anchorY="top"
@@ -219,8 +219,8 @@ function NodeCard({ image, position, label, timestamp, onClick }) {
         <Text
           font={KOREAN_FONT}
           position={[0, -CARD_H / 2 - 0.19, 0.03]}
-          fontSize={0.06}
-          color={0xffffff}
+          fontSize={0.048}
+          color={c.fg}
           letterSpacing={-0.02}
           anchorX="center"
           anchorY="top"
