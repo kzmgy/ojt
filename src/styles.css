@@ -211,6 +211,107 @@ body.dark-theme .cursor-orb {
   color: #ffffff;
 }
 
+/* ─── Carousel detail overlay (title + bullet + description) ─────
+   Positioning is anchored to the focused card. The card occupies
+   roughly 48 % of viewport height (and width on 16:9), so we drive
+   every offset off vh — that way the overlay stays glued to the card
+   as the window scales. Spec was authored on a 1920×1080 canvas:
+     card width 924  (≈ 85.56 vh on 16:9)
+     card height 520 (≈ 48.15 vh)
+     card left  498  (≈ 50% - 42.78 vh)
+     card bottom 800 (≈ 50% + 24.07 vh)
+   Title row: card_left + 48 px right, card_bottom + 32 px down.
+   ─────────────────────────────────────────────────────────────── */
+.carousel-info {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+}
+
+.carousel-info__title-row {
+  position: absolute;
+  left: calc(50% - 38.34vh);   /* card_left + 48 px */
+  top: calc(50% + 27.03vh);    /* card_bottom + 32 px */
+  display: flex;
+  align-items: center;
+  gap: 0.74vh;                  /* 8 px */
+}
+
+.carousel-info__bullet {
+  width: 2.41vh;                /* 26 px */
+  height: 2.41vh;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  animation: carousel-bullet-breathe 1.6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes carousel-bullet-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(0.7); }
+}
+
+.carousel-info__title {
+  margin: 0;
+  font-size: 2.96vh;            /* 32 px */
+  line-height: 1.35;
+  letter-spacing: -0.032em;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+
+.carousel-info__desc {
+  position: absolute;
+  /* Same x as title (= title-row left + bullet width + gap) */
+  left: calc(50% - 35.19vh);
+  /* title-row top + 1 line of title (32×1.35 = 43.2 px) + 20 px gap */
+  top: calc(50% + 32.88vh);
+  margin: 0;
+  font-size: 1.48vh;            /* 16 px @ 1080 */
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.3);
+  max-width: 65vh;
+}
+
+/* Light theme: invert colours so the overlay stays legible. */
+body:not(.dark-theme) .carousel-info__bullet {
+  background: rgba(10, 10, 10, 0.6);
+}
+body:not(.dark-theme) .carousel-info__title {
+  color: rgba(10, 10, 10, 0.6);
+}
+body:not(.dark-theme) .carousel-info__desc {
+  color: rgba(10, 10, 10, 0.3);
+}
+
+/* Compact / portrait viewports → the central card itself shrinks to
+   ~18 vh, so we ditch the vh-anchored math and dock the overlay below
+   the centre of the screen instead. */
+@media (max-aspect-ratio: 13/10), (max-width: 700px) {
+  .carousel-info__title-row {
+    left: 8vw;
+    top: 64%;
+    gap: 6px;
+  }
+  .carousel-info__bullet {
+    width: 14px;
+    height: 14px;
+  }
+  .carousel-info__title {
+    font-size: clamp(16px, 4.4vw, 22px);
+  }
+  .carousel-info__desc {
+    left: 8vw;
+    top: calc(64% + 36px);
+    font-size: clamp(11px, 3.2vw, 14px);
+    max-width: 84vw;
+  }
+}
+
 /* ─── Bottom center: view-mode switcher ─── */
 .view-switcher {
   position: fixed;

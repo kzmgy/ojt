@@ -6,6 +6,8 @@ import { GroupScene } from './components/GroupScene';
 import { NodeScene } from './components/NodeScene';
 import { SpaceScene } from './components/SpaceScene';
 import { CursorOrb } from './components/CursorOrb';
+import { IMAGES } from './data/images';
+import { titleFor, descriptionFor } from './lib/cardLabels';
 import { ThemeContext, colors } from './lib/theme';
 
 function buildGridState(card) {
@@ -39,6 +41,10 @@ export default function App() {
       localStorage.setItem('theme', theme);
     } catch (e) {}
   }, [theme]);
+
+  const focused = gridState
+    ? IMAGES.find((i) => i.id === gridState.focusedId)
+    : null;
 
   const switchView = (mode) => {
     if (mode === viewMode) return;
@@ -89,6 +95,26 @@ export default function App() {
             >
               ← 뒤로
             </motion.button>
+          )}
+        </AnimatePresence>
+
+        {/* Carousel detail overlay — only shown for the central focused card. */}
+        <AnimatePresence mode="wait">
+          {viewMode === 'sphere' && focused && (
+            <motion.div
+              key={`carousel-info-${focused.id}`}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              className="carousel-info"
+            >
+              <div className="carousel-info__title-row">
+                <span className="carousel-info__bullet" aria-hidden />
+                <h2 className="carousel-info__title">{titleFor(focused)}</h2>
+              </div>
+              <p className="carousel-info__desc">{descriptionFor(focused)}</p>
+            </motion.div>
           )}
         </AnimatePresence>
 
