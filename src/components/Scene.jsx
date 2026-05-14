@@ -489,7 +489,7 @@ export function Scene({ gridState, setGridState }) {
           }}
           points={pair.points}
           color={c.line}
-          lineWidth={1}
+          lineWidth={1.5}
           transparent
           opacity={0}
           depthWrite={false}

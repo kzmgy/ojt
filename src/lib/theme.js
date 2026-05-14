@@ -1,15 +1,16 @@
 import { createContext, useContext } from 'react';
 
-export const ThemeContext = createContext('light');
+// Site is dark-only now. ThemeContext + useTheme are kept as no-ops so
+// existing consumers (Card.jsx etc.) don't need to change shape.
+export const ThemeContext = createContext('dark');
 export const useTheme = () => useContext(ThemeContext);
 
-// Theme-resolved colors used throughout the 3D scenes.
-export function colors(theme) {
-  const dark = theme === 'dark';
+// Colors used throughout the 3D scenes. Single (dark) palette.
+export function colors() {
   return {
-    fg: dark ? '#f0f0f0' : '#0a0a0a',
-    dim: dark ? '#9a9a9a' : '#888888',
-    line: dark ? '#f0f0f0' : '#0a0a0a',
-    bg: dark ? '#0a0a0a' : '#ffffff',
+    fg: '#f0f0f0',
+    dim: '#9a9a9a',
+    line: '#f0f0f0',
+    bg: '#0a0a0a',
   };
 }

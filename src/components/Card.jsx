@@ -20,6 +20,12 @@ const CARD_H = 0.7 * 9 / 16;
 const BORDER = 0.022;
 const CARD_ASPECT = CARD_W / CARD_H;
 
+// Plane-local corner radius applied when the card is part of the
+// carousel row. Tuned so the focused card (scale 8.5×) lands at ~32 px
+// on screen on a 1920×1080 viewport (slightly less round than the
+// sphere thumbnail radius, which stays at CORNER_RADIUS = 0.03).
+const CAROUSEL_CORNER_RADIUS = 0.026;
+
 const _worldPos = new Vector3();
 const _outwardDir = new Vector3();
 const _parentQuat = new Quaternion();
@@ -252,8 +258,12 @@ export function Card({
       borderMat.opacity += (tOp - borderMat.opacity) * lerp;
     }
 
-    // Corner radius — applied to every card all the time (cloud + grid).
-    const targetRadius = CORNER_RADIUS;
+    // Corner radius — sphere thumbnails keep the small CORNER_RADIUS;
+    // carousel-row cards lerp to a slightly tighter radius that reads
+    // as ~32 px on a 1920×1080 viewport.
+    const targetRadius = !inCloud && rowIdx >= 0
+      ? CAROUSEL_CORNER_RADIUS
+      : CORNER_RADIUS;
     const cur = imageMat.userData.uniforms.uRadius.value;
     const nextR = cur + (targetRadius - cur) * lerp;
     imageMat.userData.uniforms.uRadius.value = nextR;
